@@ -8,7 +8,8 @@ module.exports = function (app, myDataBase) {
             title: 'Connected to Database',
             message: 'Please login',
             showLogin: true,
-            showRegistration: true
+            showRegistration: true,
+            showSocialAuth: true
         });
     });
 
@@ -25,6 +26,8 @@ module.exports = function (app, myDataBase) {
             req.logout();
             res.redirect('/');
         });
+
+
 
     app.route('/register').post((req, res, next) => {
         const hash = bcrypt.hashSync(req.body.password, 12);
@@ -53,6 +56,11 @@ module.exports = function (app, myDataBase) {
             res.redirect('/profile');
         }
     );
+
+    app.route('/auth/github').get(passport.authenticate('github'));
+    app.route('/auth/github/callback').get(passport.authenticate('github', { failureRedirect: '/' }), (req, res) => {
+        res.redirect('/profile');
+    })
 
     app.use((req, res, next) => {
         req.status(404)
